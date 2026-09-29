@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎒 [학생용] 무인도 생존 아이템 장착소</title>
+  <meta name="description" content="중학교 보건수업 건강권(AAAQ) 탐정단 학생용 생존 인벤토리 장착 화면">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .student-page-body {
+      background: linear-gradient(180deg, #38bdf8 0%, #0284c7 40%, #0369a1 100%);
+      min-height: 100vh;
+      padding: 20px 14px 80px;
+    }
+    .student-app-wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 10;
+    }
+    .game-team-banner {
+      background: #fffbeb;
+      border: 5px solid #78350f;
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      box-shadow: var(--box-shadow-game);
+      text-align: center;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .game-team-banner h1 {
+      font-family: var(--font-title);
+      font-size: 2.2rem;
+      color: #78350f;
+      margin-bottom: 6px;
+    }
+    .inventory-status-bar {
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      border: 4px solid #facc15;
+      border-radius: var(--radius-md);
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 12px;
+      z-index: 90;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      margin-bottom: 20px;
+    }
+    .slot-counter-title {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      font-weight: 700;
+    }
+    .slot-counter-value {
+      font-family: var(--font-game);
+      font-size: 1.6rem;
+      color: #facc15;
+      letter-spacing: 1px;
+    }
+    .success-alert-box {
+      display: none;
+      background: linear-gradient(180deg, #dcfce7 0%, #bbf7d0 100%);
+      border: 3px solid #16a34a;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      color: #14532d;
+      font-family: var(--font-game);
+      font-size: 1.2rem;
+      text-align: center;
+      margin-bottom: 20px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+      animation: popSuccess 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .success-alert-box.active {
+      display: block;
+    }
+    @keyframes popSuccess {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body class="student-page-body">
+
+  <!-- Background Animated Clouds and Island Props -->
+  <div class="game-bg-decorations">
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="island-prop prop-palm-left">🌴</div>
+    <div class="island-prop prop-palm-right">🌴</div>
+  </div>
+
+  <div class="student-app-wrapper">
+    <!-- Header Team Select -->
+    <header class="game-team-banner">
+      <div style="display: inline-block; background: #fbbf24; border: 2px solid #b45309; padding: 4px 16px; border-radius: var(--radius-full); font-family: var(--font-game); font-size: 1rem; color: #451a03; margin-bottom: 6px;">
+        🔎 보건 탐정단 서바이벌 미션
+      </div>
+      <h1>🏝️ 무인도 생존 아이템 장착소</h1>
+      <p style="font-size: 1.1rem; color: #57534e; margin-bottom: 16px;">
+        무인도에서 살아남기 위해 <strong>8가지 생존 카드 중 딱 4개</strong>를 골라 인벤토리에 장착하세요!
+      </p>
+
+      <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+        <label for="selectMyTeam" style="font-family: var(--font-title); font-size: 1.3rem; color: #78350f;">
+          🚩 우리 모둠 선택:
+        </label>
+        <select id="selectMyTeam" class="game-btn" style="padding: 6px 16px; font-size: 1.1rem; background: #ffffff; color: #78350f;">
+          <option value="1">1모둠 탐정단 🏕️</option>
+          <option value="2">2모둠 탐정단 ⛺</option>
+          <option value="3">3모둠 탐정단 🧭</option>
+          <option value="4">4모둠 탐정단 🔦</option>
+          <option value="5">5모둠 탐정단 🗺️</option>
+          <option value="6">6모둠 탐정단 🛡️</option>
+          <option value="7">7모둠 탐정단 ⛵</option>
+          <option value="8">8모둠 탐정단 🏝️</option>
+        </select>
+      </div>
+    </header>
+
+    <!-- Sticky Counter Bar -->
+    <div class="inventory-status-bar">
+      <div>
+        <div class="slot-counter-title">🎒 인벤토리 장착 현황</div>
+        <div class="slot-counter-value" id="slotCounter">0 / 4 슬롯 장착</div>
+      </div>
+      <button id="btnSubmitTeamPicks" class="game-btn game-btn-success" style="font-size: 1.15rem; padding: 10px 24px;">
+        🚀 우리 모둠 생존템 출격 (제출)!
+      </button>
+    </div>
+
+    <!-- Success Feedback Notification -->
+    <div id="successToast" class="success-alert-box">
+      🎉 <span id="toastTeamName">1모둠</span>의 생존 아이템 4개가 <strong>교사용 대시보드 화면에 성공적으로 전송</strong>되었습니다!
+    </div>
+
+    <!-- 8 Survival Cards Grid -->
+    <div class="game-items-grid" id="studentItemsGrid">
+      <!-- Injected via JS -->
+    </div>
+
+    <!-- Strategy Coaching Box -->
+    <div class="teacher-quest-guide" style="margin-top: 28px; background: #fffbeb; border-color: #b45309;">
+      <span class="guide-icon">💡</span>
+      <div>
+        <h5 style="color: #78350f;">모둠 탐정단 전략 힌트!</h5>
+        <p style="color: #451a03;">
+          "가뭄이 올까? 전염병이 돌까? 화산이 터질까? 아니면 누군가 다칠까?<br>
+          우리 모둠이 살아남기 위해 절대 포기할 수 없는 4가지 건강권 카드를 신중하게 토론해보세요!"
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SURVIVAL_ITEMS = [
+      {
+        id: "health_room",
+        name: "보건실과 약",
+        icon: "🏥",
+        categoryName: "가용성 (Availability)",
+        tagClass: "aaaq-tag-a1",
+        desc: "아플 때 전문가에게 치료받고 필수 의약품을 처방받을 수 있는 시설"
+      },
+      {
+        id: "flat_path",
+        name: "평평한 길",
+        icon: "♿",
+        categoryName: "접근성 (Accessibility)",
+        tagClass: "aaaq-tag-a2",
+        desc: "다친 환자, 휠체어, 누구나 위험 없이 대피소와 보건시설로 갈 수 있는 길"
+      },
+      {
+        id: "clean_water",
+        name: "깨끗한 물",
+        icon: "💧",
+        categoryName: "질 (Quality) / 생명권",
+        tagClass: "aaaq-tag-q",
+        desc: "탈수와 수인성 감염병을 막아주는 안전하고 깨끗한 생명수"
+      },
+      {
+        id: "privacy_shield",
+        name: "비밀 보장 방패",
+        icon: "🤐",
+        categoryName: "수용성 (Acceptability)",
+        tagClass: "aaaq-tag-a3",
+        desc: "나의 아픈 비밀과 진료 기록이 보호되어 부끄러움 없이 치료받을 권리"
+      },
+      {
+        id: "safe_food",
+        name: "섭취가능한 음식",
+        icon: "🥗",
+        categoryName: "가용성 (Availability)",
+        tagClass: "aaaq-tag-a1",
+        desc: "상하거나 독성이 없는 안전한 영양 공급 식량"
+      },
+      {
+        id: "clean_air",
+        name: "미세먼지 없는 공기",
+        icon: "🌳",
+        categoryName: "질 (Quality) / 환경권",
+        tagClass: "aaaq-tag-q",
+        desc: "유독가스와 화산재, 미세먼지로부터 폐를 지키는 맑은 공기"
+      },
+      {
+        id: "safety_rules",
+        name: "건강 안전 규칙",
+        icon: "📜",
+        categoryName: "수용성 (Acceptability) / 제도",
+        tagClass: "aaaq-tag-a3",
+        desc: "모두가 지켜야 할 위생 수칙과 감염 예방 안전 행동 규칙"
+      },
+      {
+        id: "safe_facility",
+        name: "안전한 시설",
+        icon: "🚨",
+        categoryName: "접근성 (Accessibility) / 보호",
+        tagClass: "aaaq-tag-a2",
+        desc: "비바람, 태풍, 추위로부터 몸을 안전하게 지켜주는 대피소"
+      }
+    ];
+
+    let selectedItemIds = [];
+    let broadcastChannel = null;
+
+    if ('BroadcastChannel' in window) {
+      broadcastChannel = new BroadcastChannel('health_rights_island_sync');
+    }
+
+    // Audio synthesizer
+    const playTone = (freq, type = 'sine', duration = 0.1) => {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    };
+
+    function renderCards() {
+      const grid = document.getElementById('studentItemsGrid');
+      grid.innerHTML = SURVIVAL_ITEMS.map(item => {
+        const isSelected = selectedItemIds.includes(item.id);
+        return `
+          <div class="game-item-card ${isSelected ? 'selected' : ''}" data-id="${item.id}">
+            <div class="game-item-header">
+              <div class="game-item-icon-frame">${item.icon}</div>
+              <div class="game-item-title">
+                <h4>${item.name}</h4>
+                <span class="aaaq-badge ${item.tagClass}">${item.categoryName}</span>
+              </div>
+            </div>
+            <div class="game-item-body">
+              ${item.desc}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      grid.querySelectorAll('.game-item-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const id = card.dataset.id;
+          if (selectedItemIds.includes(id)) {
+            selectedItemIds = selectedItemIds.filter(itemId => itemId !== id);
+            playTone(380, 'triangle', 0.08);
+          } else {
+            if (selectedItemIds.length >= 4) {
+              alert("인벤토리가 가득 찼습니다! (최대 4개) 다른 아이템으로 바꾸려면 기존 아이템을 클릭해 장착 해제하세요.");
+              return;
+            }
+            selectedItemIds.push(id);
+            playTone(750, 'sine', 0.12);
+          }
+          updateCounter();
+          renderCards();
+        });
+      });
+    }
+
+    function updateCounter() {
+      const slotCounter = document.getElementById('slotCounter');
+      slotCounter.textContent = `${selectedItemIds.length} / 4 슬롯 장착`;
+      if (selectedItemIds.length === 4) {
+        slotCounter.style.color = '#4ade80';
+      } else {
+        slotCounter.style.color = '#facc15';
+      }
+    }
+
+    document.getElementById('btnSubmitTeamPicks').addEventListener('click', () => {
+      const teamNum = document.getElementById('selectMyTeam').value;
+      const teamId = `team_${teamNum}`;
+
+      if (selectedItemIds.length !== 4) {
+        alert(`생존 아이템을 4개 모두 채워야 출격할 수 있습니다! (현재: ${selectedItemIds.length}개)`);
+        return;
+      }
+
+      if (broadcastChannel) {
+        broadcastChannel.postMessage({
+          type: 'TEAM_SELECTION_UPDATED',
+          payload: {
+            teamId: teamId,
+            selectedItems: selectedItemIds
+          }
+        });
+      }
+
+      try {
+        const saved = localStorage.getItem('health_island_state');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.teams) {
+            const t = parsed.teams.find(tm => tm.id === teamId || tm.num == teamNum);
+            if (t) {
+              t.selectedItems = [...selectedItemIds];
+              localStorage.setItem('health_island_state', JSON.stringify(parsed));
+            }
+          }
+        }
+      } catch (e) {}
+
+      playTone(523, 'triangle', 0.15);
+      setTimeout(() => playTone(659, 'triangle', 0.15), 100);
+      setTimeout(() => playTone(783, 'triangle', 0.2), 200);
+
+      const toast = document.getElementById('successToast');
+      document.getElementById('toastTeamName').textContent = `${teamNum}모둠`;
+      toast.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const teamParam = urlParams.get('team');
+    if (teamParam) {
+      document.getElementById('selectMyTeam').value = teamParam;
+    }
+
+    renderCards();
+    updateCounter();
+  </script>
+</body>
+</html>
